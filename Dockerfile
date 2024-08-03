@@ -11,10 +11,9 @@ ARG UID=1000
 ARG GID=1000
 
 RUN apt-get update && apt-get install -y --no-install-recommends gcc
-RUN apt-get install -y --no-install-recommends default-libmysqlclient-dev \
-    && libmariadb-dev-compat libmariadb-dev \
+RUN apt-get install -y --no-install-recommends libmariadb-dev-compat libmariadb-dev \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/lib/apt/lists/* 
 
 
 RUN groupadd -g $GID -o app && \
