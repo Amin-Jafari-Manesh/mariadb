@@ -32,8 +32,7 @@ def test_mariadb_connection():
             user='admin',
             password=db_config['PASS'],
             host=db_config['DOMAIN'],
-            port='3306',
-            database='db',
+            database='db'
         )
         logging.info("MariaDB connection successful")
         cur = conn.cursor()
