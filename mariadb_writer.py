@@ -50,7 +50,6 @@ def mariadb_write_hash(size: int = 100) -> bool:
             user='admin',
             password=db_config['PASS'],
             host=db_config['DOMAIN'],
-            port='3306',
             database='db',
         )
         cur = conn.cursor()
