@@ -37,6 +37,7 @@ def test_mariadb_connection():
         logging.info("MariaDB connection successful")
         cur = conn.cursor()
         cur.execute("CREATE TABLE IF NOT EXISTS hashes (id serial PRIMARY KEY, hash TEXT, created_at TIMESTAMP);")
+        conn.commit()
         conn.close()
         return True
     except Exception as e:
