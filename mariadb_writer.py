@@ -1,7 +1,6 @@
 import logging
 from os import environ
 import mariadb
-from sqlalchemy import create_engine, MetaData, Table, Column, String, Integer, DateTime
 from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
@@ -12,13 +11,7 @@ db_config = {
     'HASH_SIZE': int(environ.get('HASH_SIZE', '')),
     'RECORDS': int(environ.get('RECORDS', '')),
 }
-metadata = MetaData()
 
-hashes = Table('hashes', metadata,
-               Column('id', Integer, primary_key=True),
-               Column('hash', String(64* db_config['HASH_SIZE'])),
-               Column('created_at', DateTime, default=datetime.now)
-               )
 
 
 def generate_random_hash(numb: int = 1) -> str:
@@ -43,6 +36,8 @@ def test_mariadb_connection():
             database='db',
         )
         logging.info("MariaDB connection successful")
+        cur = conn.cursor()
+        cur.execute("CREATE TABLE hashes (id INT AUTO_INCREMENT PRIMARY KEY, hash TEXT, created_at DATETIME)")
         conn.close()
         return True
     except Exception as e:
@@ -52,13 +47,19 @@ def test_mariadb_connection():
 
 def mariadb_write_hash(size: int = 100) -> bool:
     if test_mariadb_connection():
-        maria_uri = f"mysql+pymysql://admin:{db_config['PASS']}@{db_config['DOMAIN']}:3306/db"
-        engine = create_engine(maria_uri)
-        connection = engine.connect()
-        metadata.create_all(engine)
+        conn = mariadb.connect(
+            user='admin',
+            password=db_config['PASS'],
+            host=db_config['DOMAIN'],
+            port='3306',
+            database='db',
+        )
+        cur = conn.cursor()
         for _ in range(size):
-            connection.execute(hashes.insert().values(hash=generate_random_hash(db_config['HASH_SIZE'])))
-        connection.close()
+            cur.execute(f"INSERT INTO hashes (hash, created_at) VALUES ('{generate_random_hash(db_config['HASH_SIZE'])}', '{datetime.now()}')")
+        conn.commit()
+        conn.close()
+
         return True
     return False
 
