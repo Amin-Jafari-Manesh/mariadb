@@ -4,6 +4,8 @@ import mariadb
 from sqlalchemy import create_engine, MetaData, Table, Column, String, Integer, DateTime
 from datetime import datetime
 
+logging.basicConfig(level=logging.INFO)
+
 db_config = {
     'PASS': environ.get('PASS', ''),
     'DOMAIN': environ.get('DOMAIN', ''),
@@ -14,7 +16,7 @@ metadata = MetaData()
 
 hashes = Table('hashes', metadata,
                Column('id', Integer, primary_key=True),
-               Column('hash', String(64)),
+               Column('hash', String(64* db_config['HASH_SIZE'])),
                Column('created_at', DateTime, default=datetime.now)
                )
 
