@@ -1,7 +1,7 @@
 import logging
 from os import environ
 import mariadb
-from sqlalchemy import create_engine, MetaData, Table, Column, String , Integer, DateTime
+from sqlalchemy import create_engine, MetaData, Table, Column, String, Integer, DateTime
 from datetime import datetime
 
 db_config = {
@@ -14,7 +14,7 @@ metadata = MetaData()
 
 hashes = Table('hashes', metadata,
                Column('id', Integer, primary_key=True),
-               Column('hash', String(640000), unique=True),
+               Column('hash', String(64)),
                Column('created_at', DateTime, default=datetime.now)
                )
 
@@ -60,5 +60,9 @@ def mariadb_write_hash(size: int = 100) -> bool:
         return True
     return False
 
+
 if __name__ == '__main__':
-    mariadb_write_hash(db_config['RECORDS'])
+    if mariadb_write_hash(db_config['RECORDS']):
+        logging.info("Hashes successfully written to the database.")
+    else:
+        logging.error("Failed to write hashes to the database.")
